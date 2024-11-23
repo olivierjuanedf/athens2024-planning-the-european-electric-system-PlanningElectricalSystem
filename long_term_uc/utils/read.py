@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from long_term_uc.common.long_term_uc_io import get_json_usage_params_file, get_json_fixed_params_file, \
     get_json_eraa_avail_values_file, get_json_params_tb_modif_file, get_json_pypsa_static_params_file, \
-        get_json_params_modif_country_files, get_json_fuel_sources_tb_modif_file, INPUT_LT_UC_COUNTRY_SUBFOLDER
+        get_json_params_modif_country_files, get_json_fuel_sources_tb_modif_file
 from long_term_uc.common.constants_extract_eraa_data import USAGE_PARAMS_SHORT_NAMES, ERAADatasetDescr, \
     PypsaStaticParams, UsageParameters
 from long_term_uc.common.uc_run_params import UCRunParams

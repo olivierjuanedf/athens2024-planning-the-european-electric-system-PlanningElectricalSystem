@@ -70,9 +70,13 @@ network = add_loads(network=network, demand=demand)
 network = add_interco_links(network, countries=uc_run_params.selected_countries, 
                             interco_capas=interco_capas)
 print("PyPSA network main properties:", network)
-plt.close()
+# plot network
+from long_term_uc.include.plotter import PlotParams
+plot_params = PlotParams()
+plot_params.read_and_check()
 network.plot(title="My little elec. Europe network", color_geomap=True, jitter=0.3)
 plt.savefig(get_network_figure())
+plt.close()
 print("Optimize 'network' - i.e. solve associated UC problem")
 result = network.optimize(solver_name="highs")
 print(result)
@@ -88,7 +92,7 @@ if result[1] == pypsa_opt_resol_status:
   objective_value = get_network_obj_value(network=network)
   print(f"Optimisation resolution status is {pypsa_opt_resol_status} with objective value (cost) = {objective_value:.2f} -> output data (resp. figures) can be generated")
 
-  network.buses_t.marginal_price.plot.line(figsize=(8, 3), ylabel="Euro per MWh", color=my_colors)
+  network.buses_t.marginal_price.plot.line(figsize=(8, 3), ylabel="Euro per MWh", color=plot_params.per_zone_color)
   plt.tight_layout()
   plt.savefig(get_price_figure(country='europe', year=uc_run_params.selected_target_year, climatic_year=uc_run_params.selected_climatic_year,
                              start_horizon=uc_run_params.uc_period_start)

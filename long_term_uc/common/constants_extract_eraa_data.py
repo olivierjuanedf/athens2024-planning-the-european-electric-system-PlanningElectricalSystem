@@ -48,15 +48,20 @@ RAW_TYPES_FOR_CHECK = {"eraa_dataset_descr":
                         "available_target_years": "list_of_int",
                         "eraa_edition": "str",
                         "gps_coordinates": "dict_str_list_of_float",
-                        "per_agg_prod_type_color": "dict_str_str",
-                        "per_zone_color": "dict_str_str",
                         "pypsa_unit_params_per_agg_pt": "dict_str_dict",
                         "units_complem_params_per_agg_pt": "two_level_dict_str_str_str"
                         },
                         "pypsa_static_params":
                         {
                             "min_unit_params_per_agg_pt": "dict_str_list_of_str"
-                        }
+                        },
+                        "plot_params": 
+                        {
+                            "zone_palette_choice": "str",
+                            "agg_prod_type_palette_choice": "str",
+                            "zone_palettes_def": "two_level_dict_str_str_str",
+                            "agg_prod_type_palettes_def": "two_level_dict_str_str_str"
+                            }
 }
 
 
@@ -97,8 +102,6 @@ class ERAADatasetDescr:
     eraa_edition: str
     # per (meta-)country GPS coordinates - only for network plot
     gps_coordinates: Union[Dict[str, List[float]], Dict[str, Tuple[float, float]]]
-    per_zone_color: Dict[str, str]
-    per_agg_prod_type_color: Dict[str, str]
     pypsa_unit_params_per_agg_pt: Dict[str, dict]  # dict of per aggreg. prod type main Pypsa params
     # for each aggreg. prod type, a dict. {complem. param name: source - "from_json_tb_modif"/"from_eraa_data"}
     units_complem_params_per_agg_pt: Dict[str, Dict[str, str]]
