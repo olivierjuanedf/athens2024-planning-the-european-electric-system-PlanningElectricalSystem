@@ -1,3 +1,6 @@
+(A CLASSER...)
+data/ERAA_2023-2 -> PECD et res_capa-factors -> doublon ?
+
 [Toy ex, Mon afternoon]
 1) Doc doc/... pour clarifier les choses + baba utilisation codespace en dehors du repot ?
 2) my_toy_ex_italy.py
