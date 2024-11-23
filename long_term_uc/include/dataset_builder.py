@@ -228,7 +228,7 @@ def init_pypsa_network(df_demand_first_country: pd.DataFrame):
     return network
 
 
-def add_gps_coordinates(network, countries_gps_coords: Dict[str, Tuple[float, float]]):
+def add_gps_coordinates(network: pypsa.Network, countries_gps_coords: Dict[str, Tuple[float, float]]):
     print("Add GPS coordinates") 
     for country, gps_coords in countries_gps_coords.items():
         country_bus_name = get_country_bus_name(country=country)
@@ -236,7 +236,7 @@ def add_gps_coordinates(network, countries_gps_coords: Dict[str, Tuple[float, fl
     return network
 
 
-def add_energy_carrier(network, fuel_sources: Dict[str, FuelSources]):
+def add_energy_carrier(network: pypsa.Network, fuel_sources: Dict[str, FuelSources]):
     print("Add energy carriers")
     for carrier in list(fuel_sources.keys()):
         network.add("Carrier", name=carrier, co2_emissions=fuel_sources[carrier].co2_emissions/1000)
@@ -246,7 +246,7 @@ def add_energy_carrier(network, fuel_sources: Dict[str, FuelSources]):
 STORAGE_LIKE_UNITS = ["batteries", "flexibility", "hydro"]
 
 
-def add_generators(network, generators_data: Dict[str, List[GenerationUnitData]]):
+def add_generators(network: pypsa.Network, generators_data: Dict[str, List[GenerationUnitData]]):
     print("Add generators - associated to their respective buses")
     for country, gen_units_data in generators_data.items():
         country_bus_name = get_country_bus_name(country=country)
@@ -263,7 +263,7 @@ def add_generators(network, generators_data: Dict[str, List[GenerationUnitData]]
     return network
 
 
-def add_loads(network, demand: Dict[str, pd.DataFrame]):
+def add_loads(network: pypsa.Network, demand: Dict[str, pd.DataFrame]):
     print("Add loads - associated to their respective buses")
     for country in demand:
         country_bus_name = get_country_bus_name(country=country)
@@ -292,7 +292,7 @@ def get_current_interco_capa(interco_capas: Dict[Tuple[str, str], float], countr
     return current_interco_capa, is_sym_interco
 
 
-def add_interco_links(network, countries: List[str], interco_capas: Dict[Tuple[str, str], float]):
+def add_interco_links(network: pypsa.Network, countries: List[str], interco_capas: Dict[Tuple[str, str], float]):
     print(f"Add interco. links - between the selected countries: {countries}")
     links = []
     symmetric_links = []
@@ -344,7 +344,7 @@ def set_period_start_file(year: int, period_start: datetime) -> str:
     return datetime(year=year, month=period_start.month, day=period_start.day).strftime("%Y-%m-%d")
 
 
-def save_lp_model(network, year: int, n_countries: int, period_start: datetime):
+def save_lp_model(network: pypsa.Network, year: int, n_countries: int, period_start: datetime):
     print("Save lp model")
     import pypsa.optimization as opt
     from long_term_uc.common.long_term_uc_io import OUTPUT_DATA_FOLDER
@@ -357,7 +357,7 @@ def save_lp_model(network, year: int, n_countries: int, period_start: datetime):
     m.to_file(Path(f'{OUTPUT_DATA_FOLDER}/model_{file_suffix}.lp'))
 
 
-def get_stationary_batt_opt_dec(network, countries: List[str]):
+def get_stationary_batt_opt_dec(network: pypsa.Network, countries: List[str]):
     stationary_batt_opt_dec = {}
     # for all but storages
     # network.generators_t.p
@@ -372,7 +372,8 @@ def get_stationary_batt_opt_dec(network, countries: List[str]):
             stationary_batt_opt_dec[current_country] = generator.p_nom_opt
 
 
-def plot_uc_run_figs(network, countries: List[str]):
+def plot_uc_run_figs(network: pypsa.Network, countries: List[str], year: int, uc_period_start: datetime):
+    # TODO: use this function
     import matplotlib.pyplot as plt
     print("Plot generation and prices figures")
 
@@ -383,14 +384,17 @@ def plot_uc_run_figs(network, countries: List[str]):
         network.generators.p_nom_opt.drop(f"Failure_{country_bus_name}").div(1e3).plot.bar(ylabel="GW", figsize=(8, 3))
     # [Coding trick] Matplotlib can directly adapt size of figure to fit with values plotted
     plt.tight_layout()
+    plt.close()
 
     # And "stack" of optimized production profiles
     network.generators_t.p.div(1e3).plot.area(subplots=False, ylabel="GW")
     from long_term_uc.common.long_term_uc_io import get_prod_figure, get_price_figure
-    plt.savefig(get_prod_figure(country=country, year=year, start_horizon=uc_run_params.uc_period_start))
+    plt.savefig(get_prod_figure(country=country, year=year, start_horizon=uc_period_start))
     plt.tight_layout()
+    plt.close()
 
     # Finally, "marginal prices" -> meaning? How can you interprete the very constant value plotted?
     network.buses_t.marginal_price.mean(1).plot.area(figsize=(8, 3), ylabel="Euro per MWh")
-    plt.savefig(get_price_figure(country=country, year=year, start_horizon=uc_run_params.uc_period_start))
+    plt.savefig(get_price_figure(country=country, year=year, start_horizon=uc_period_start))
     plt.tight_layout()
+    plt.close()

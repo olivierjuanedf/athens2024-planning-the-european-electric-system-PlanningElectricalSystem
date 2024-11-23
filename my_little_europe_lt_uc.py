@@ -7,7 +7,7 @@ warnings.simplefilter(action='ignore', category=FutureWarning)
 warnings.simplefilter(action='ignore', category=UserWarning)
 import matplotlib.pyplot as plt
 
-from long_term_uc.common.long_term_uc_io import get_marginal_prices_file, get_opt_power_file, get_price_figure, get_prod_figure, get_network_figure
+from long_term_uc.common.long_term_uc_io import get_marginal_prices_file, get_opt_power_file, get_price_figure, get_network_figure
 from long_term_uc.utils.read import read_and_check_uc_run_params
 from long_term_uc.utils.eraa_data_reader import get_countries_data
 from long_term_uc.utils.basic_utils import get_period_str
