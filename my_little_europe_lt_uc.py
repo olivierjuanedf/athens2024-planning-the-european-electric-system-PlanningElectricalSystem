@@ -14,7 +14,7 @@ from long_term_uc.utils.basic_utils import get_period_str
 from long_term_uc.include.dataset_builder import get_generation_units_data, control_min_pypsa_params_per_gen_units
 from long_term_uc.utils.read import read_and_check_pypsa_static_params
 from long_term_uc.include.dataset_builder import init_pypsa_network, add_gps_coordinates, add_energy_carrier, \
-  add_generators, add_loads, add_interco_links, save_lp_model, overwrite_gen_units_fuel_src_params
+  add_generators, add_loads, add_interco_links, save_lp_model
 from long_term_uc.common.fuel_sources import FUEL_SOURCES
 
 usage_params, eraa_data_descr, uc_run_params = read_and_check_uc_run_params()
@@ -40,7 +40,7 @@ generation_units_data = \
 for country, val in generation_units_data.items():
     for i in range(len(val)):
         val[i].committable = False
-# TODO: connect this properly
+# TODO[perpi]: connect this properly
 #if len(uc_run_params.updated_fuel_sources_params) > 0:
 #   generation_units_data = overwrite_gen_units_fuel_src_params(generation_units_data=generation_units_data, 
 #                                                               updated_fuel_sources_params=uc_run_params.updated_fuel_sources_params)
@@ -88,6 +88,7 @@ print("THE END of European PyPSA-ERAA UC simulation... now you can hack it!")
 from long_term_uc.utils.pypsa_utils import OPTIM_RESOL_STATUS, get_network_obj_value
 pypsa_opt_resol_status = OPTIM_RESOL_STATUS.optimal
 
+# TODO[perpi]: reactivate prod plot, using colors set in JSON file
 if result[1] == pypsa_opt_resol_status:
   objective_value = get_network_obj_value(network=network)
   print(f"Optimisation resolution status is {pypsa_opt_resol_status} with objective value (cost) = {objective_value:.2f} -> output data (resp. figures) can be generated")
