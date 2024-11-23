@@ -1,4 +1,6 @@
 import json
+from dataclasses import dataclass
+
 
 from long_term_uc.common.long_term_uc_io import get_json_usage_params_file, get_json_fixed_params_file, \
     get_json_eraa_avail_values_file, get_json_params_tb_modif_file, get_json_pypsa_static_params_file, \

@@ -1,0 +1,36 @@
+{
+    "zone_palette_choice": "own",
+    "agg_prod_type_palette_choice": "own",
+    "zone_palettes_def": {
+      "own": {
+        "ben": "brown",
+        "fra": "purple",
+        "ger": "gray",
+        "ibe": "yellow",
+        "ita": "green",
+        "pol": "black",
+        "sca": "blue"
+      }
+    },
+    "agg_prod_type_palettes_def": {
+      "own": {
+        "batteries": "pink",
+        "biofuel": "green",
+        "coal": "brown",
+        "dsr": "red",
+        "gas": "grey",
+        "hydro_pondage": "blue",
+        "hydro_pump_storage_closed_loop": "blue",
+        "hydro_pump_storage_open_loop": "blue",
+        "hydro_reservoir": "blue",
+        "hydro_run_of_river": "blue",
+        "nuclear": "olive",
+        "oil": "black",
+        "others_fatal": "green",
+        "solar_pv": "yellow",
+        "solar_thermal": "orange",
+        "wind_offshore": "magenta",
+        "wind_onshore": "purple"
+      }
+    }
+  }

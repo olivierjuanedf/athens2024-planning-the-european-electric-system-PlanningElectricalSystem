@@ -108,34 +108,6 @@
       59.3306
     ]
   },
-  "per_zone_color": {
-    "benelux": "brown",
-    "france": "purple",
-    "germany": "gray",
-    "iberian-peninsula": "yellow",
-    "italy": "green",
-    "poland": "black",
-    "scandinavia": "blue"
-  },
-  "per_agg_prod_type_color": {
-    "batteries": "pink",
-    "biofuel": "green",
-    "coal": "brown",
-    "dsr": "red",
-    "gas": "grey",
-    "hydro_pondage": "blue",
-    "hydro_pump_storage_closed_loop": "blue",
-    "hydro_pump_storage_open_loop": "blue",
-    "hydro_reservoir": "blue",
-    "hydro_run_of_river": "blue",
-    "nuclear": "olive",
-    "oil": "black",
-    "others_fatal": "green",
-    "solar_pv": "yellow",
-    "solar_thermal": "orange",
-    "wind_offshore": "magenta",
-    "wind_onshore": "purple"
-  },
   "pypsa_unit_params_per_agg_pt": {
     "batteries": {
       "carrier": "flexibility",

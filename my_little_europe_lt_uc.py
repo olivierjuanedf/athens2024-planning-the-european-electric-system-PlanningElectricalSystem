@@ -83,11 +83,12 @@ print("THE END of European PyPSA-ERAA UC simulation... now you can hack it!")
 
 from long_term_uc.utils.pypsa_utils import OPTIM_RESOL_STATUS, get_network_obj_value
 pypsa_opt_resol_status = OPTIM_RESOL_STATUS.optimal
+
 if result[1] == pypsa_opt_resol_status:
   objective_value = get_network_obj_value(network=network)
   print(f"Optimisation resolution status is {pypsa_opt_resol_status} with objective value (cost) = {objective_value:.2f} -> output data (resp. figures) can be generated")
 
-  network.buses_t.marginal_price.plot.line(figsize=(8, 3), ylabel="Euro per MWh")
+  network.buses_t.marginal_price.plot.line(figsize=(8, 3), ylabel="Euro per MWh", color=my_colors)
   plt.tight_layout()
   plt.savefig(get_price_figure(country='europe', year=uc_run_params.selected_target_year, climatic_year=uc_run_params.selected_climatic_year,
                              start_horizon=uc_run_params.uc_period_start)
