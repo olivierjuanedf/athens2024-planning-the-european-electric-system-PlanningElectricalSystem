@@ -9,13 +9,14 @@ import matplotlib.pyplot as plt
 
 from long_term_uc.common.long_term_uc_io import get_marginal_prices_file, get_opt_power_file, get_price_figure, get_network_figure
 from long_term_uc.utils.read import read_and_check_uc_run_params
-from long_term_uc.utils.eraa_data_reader import get_countries_data
 from long_term_uc.utils.basic_utils import get_period_str
+from long_term_uc.include.dataset import Dataset
 from long_term_uc.include.dataset_builder import get_generation_units_data, control_min_pypsa_params_per_gen_units
 from long_term_uc.utils.read import read_and_check_pypsa_static_params
 from long_term_uc.include.dataset_builder import init_pypsa_network, add_gps_coordinates, add_energy_carrier, \
   add_generators, add_loads, add_interco_links, save_lp_model
 from long_term_uc.common.fuel_sources import FUEL_SOURCES
+
 
 usage_params, eraa_data_descr, uc_run_params = read_and_check_uc_run_params()
 
@@ -26,11 +27,13 @@ uc_period_msg = get_period_str(period_start=uc_run_params.uc_period_start,
                                period_end=uc_run_params.uc_period_end)
 
 print(f"Read needed ERAA ({eraa_data_descr.eraa_edition}) data for period {uc_period_msg}")
-demand, agg_cf_data, agg_gen_capa_data, interco_capas = \
-  get_countries_data(uc_run_params=uc_run_params,
-                     agg_prod_types_with_cf_data=eraa_data_descr.agg_prod_types_with_cf_data,
-                     aggreg_prod_types_def=eraa_data_descr.aggreg_prod_types_def, 
-                     is_stress_test=uc_run_params.is_stress_test)
+# initialize dataset object
+eraa_dataset = Dataset(source=f"eraa_{eraa_data_descr.eraa_edition}", 
+                       agg_prod_types_with_cf_data=eraa_data_descr.agg_prod_types_with_cf_data, 
+                       is_stress_test=uc_run_params.is_stress_test)
+
+eraa_dataset.get_countries_data(uc_run_params=uc_run_params,
+                                aggreg_prod_types_def=eraa_data_descr.aggreg_prod_types_def)
 
 print("Get generation units data, from both ERAA data - read just before - and JSON parameter file")
 generation_units_data = \

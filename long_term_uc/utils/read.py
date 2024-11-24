@@ -23,7 +23,7 @@ def check_and_load_json_file(json_file: str, file_descr: str = None) -> dict:
     return json_data
 
 
-def read_and_check_uc_run_params():
+def read_and_check_uc_run_params() -> (UsageParameters, ERAADatasetDescr, UCRunParams):
     # set JSON filenames
     json_usage_params_file = get_json_usage_params_file()
     json_fixed_params_file = get_json_fixed_params_file()

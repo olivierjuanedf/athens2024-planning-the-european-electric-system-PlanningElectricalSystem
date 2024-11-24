@@ -138,6 +138,8 @@ class ERAADatasetDescr:
                         new_avail_aggreg_pt_dict[country][elt_year].append(FAILURE_ASSET)
              
         self.available_aggreg_prod_types = new_avail_aggreg_pt_dict
+        # replace "." by "-" in edition
+        self.eraa_edition = self.eraa_edition.replace(".", "-")
 
 ALL_UNITS_KEY = "all_units"
 
