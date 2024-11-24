@@ -302,7 +302,7 @@ class Dataset:
             for i in range(len(val)):
                 val[i].committable = False
 
-    def control_min_pypsa_params_per_gen_units(pypsa_min_unit_params_per_agg_pt: Dict[str, List[str]]):
+    def control_min_pypsa_params_per_gen_units(self, pypsa_min_unit_params_per_agg_pt: Dict[str, List[str]]):
         """
         Control that minimal PyPSA parameter infos has been provided before creating generation units
         """
