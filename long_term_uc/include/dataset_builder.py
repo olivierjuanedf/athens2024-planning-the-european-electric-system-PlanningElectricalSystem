@@ -2,14 +2,12 @@ from pathlib import Path
 from datetime import datetime
 import pandas as pd
 import numpy as np
-from typing import Dict, List, Optional, Tuple, Union
+from typing import Dict, List, Tuple, Optional, Union
 from dataclasses import dataclass
 import pypsa
 
-from long_term_uc.common.error_msgs import print_errors_list, print_out_msg
-from long_term_uc.common.long_term_uc_io import COMPLEM_DATA_SOURCES, COLUMN_NAMES
+from long_term_uc.common.error_msgs import print_errors_list
 from long_term_uc.common.fuel_sources import FuelSources
-from long_term_uc.common.uc_run_params import UCRunParams
 from long_term_uc.utils.basic_utils import lexico_compar_str
 
 
@@ -86,31 +84,6 @@ def overwrite_gen_units_fuel_src_params(generation_units_data: GEN_UNITS_DATA_TY
 
         # TODO: from units data info on fuel source extract and apply updated params values
         updated_fuel_sources_params = None
-
-
-def control_min_pypsa_params_per_gen_units(generation_units_data: Dict[str, List[GenerationUnitData]],
-                                           pypsa_min_unit_params_per_agg_pt: Dict[str, List[str]]):
-    """
-    Control that minimal PyPSA parameter infos has been provided before creating generation units
-    """
-    pypsa_params_errors_list = []
-    # loop over countries
-    for country, gen_units_data in generation_units_data.items():
-        # and unit in them
-        for elt_unit_data in gen_units_data:
-            current_unit_type = elt_unit_data.type
-            pypsa_min_unit_params_set = set(pypsa_min_unit_params_per_agg_pt[current_unit_type])
-            params_with_init_val_set = set(elt_unit_data.get_non_none_attr_names())
-            missing_pypsa_params = list(pypsa_min_unit_params_set - params_with_init_val_set)
-            if len(missing_pypsa_params) > 0:
-                current_unit_name = elt_unit_data.name
-                current_msg = f"country {country}, unit name {current_unit_name} and type {current_unit_type} -> {missing_pypsa_params}"
-                pypsa_params_errors_list.append(current_msg)
-    if len(pypsa_params_errors_list) > 0:
-        print_errors_list(error_name="on 'minimal' PyPSA gen. units parameters; missing ones for", 
-                        errors_list=pypsa_params_errors_list)     
-    else:
-        print_out_msg(msg_level="info", msg="PyPSA NEEDED PARAMETERS FOR GENERATION UNITS CREATION HAVE BEEN LOADED!")
 
 
 def get_country_bus_name(country: str) -> str:

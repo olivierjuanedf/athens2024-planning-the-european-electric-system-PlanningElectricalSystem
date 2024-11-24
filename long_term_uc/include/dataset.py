@@ -4,7 +4,7 @@ from typing import Dict, List, Tuple
 import pandas as pd
 
 from long_term_uc.common.constants_datatypes import DATATYPE_NAMES
-from long_term_uc.common.error_msgs import print_out_msg
+from long_term_uc.common.error_msgs import print_errors_list, print_out_msg
 from long_term_uc.common.long_term_uc_io import COLUMN_NAMES, DT_FILE_PREFIX, DT_SUBFOLDERS, FILES_FORMAT, \
     GEN_CAPA_SUBDT_COLS, INPUT_CY_STRESS_TEST_SUBFOLDER, INPUT_ERAA_FOLDER
 from long_term_uc.common.uc_run_params import UCRunParams
@@ -301,3 +301,26 @@ class Dataset:
         for country, val in self.generation_units_data.items():
             for i in range(len(val)):
                 val[i].committable = False
+
+    def control_min_pypsa_params_per_gen_units(pypsa_min_unit_params_per_agg_pt: Dict[str, List[str]]):
+        """
+        Control that minimal PyPSA parameter infos has been provided before creating generation units
+        """
+        pypsa_params_errors_list = []
+        # loop over countries
+        for country, gen_units_data in self.generation_units_data.items():
+            # and unit in them
+            for elt_unit_data in gen_units_data:
+                current_unit_type = elt_unit_data.type
+                pypsa_min_unit_params_set = set(pypsa_min_unit_params_per_agg_pt[current_unit_type])
+                params_with_init_val_set = set(elt_unit_data.get_non_none_attr_names())
+                missing_pypsa_params = list(pypsa_min_unit_params_set - params_with_init_val_set)
+                if len(missing_pypsa_params) > 0:
+                    current_unit_name = elt_unit_data.name
+                    current_msg = f"country {country}, unit name {current_unit_name} and type {current_unit_type} -> {missing_pypsa_params}"
+                    pypsa_params_errors_list.append(current_msg)
+        if len(pypsa_params_errors_list) > 0:
+            print_errors_list(error_name="on 'minimal' PyPSA gen. units parameters; missing ones for", 
+                            errors_list=pypsa_params_errors_list)     
+        else:
+            print_out_msg(msg_level="info", msg="PyPSA NEEDED PARAMETERS FOR GENERATION UNITS CREATION HAVE BEEN LOADED!")

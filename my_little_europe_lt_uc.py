@@ -11,7 +11,6 @@ from long_term_uc.common.long_term_uc_io import get_marginal_prices_file, get_op
 from long_term_uc.utils.read import read_and_check_uc_run_params
 from long_term_uc.utils.basic_utils import get_period_str
 from long_term_uc.include.dataset import Dataset
-from long_term_uc.include.dataset_builder import control_min_pypsa_params_per_gen_units
 from long_term_uc.utils.read import read_and_check_pypsa_static_params
 from long_term_uc.include.dataset_builder import init_pypsa_network, add_gps_coordinates, add_energy_carrier, \
   add_generators, add_loads, add_interco_links, save_lp_model
@@ -47,8 +46,7 @@ eraa_dataset.set_committable_param()
 
 print("Check that 'minimal' PyPSA parameters for unit creation have been provided (in JSON files)/read (from ERAA data)")
 pypsa_static_params = read_and_check_pypsa_static_params()
-control_min_pypsa_params_per_gen_units(generation_units_data=generation_units_data,
-                                       pypsa_min_unit_params_per_agg_pt=pypsa_static_params.min_unit_params_per_agg_pt)
+eraa_dataset.control_min_pypsa_params_per_gen_units(pypsa_min_unit_params_per_agg_pt=pypsa_static_params.min_unit_params_per_agg_pt)
 
 # create PyPSA network
 network = init_pypsa_network(df_demand_first_country=demand[uc_run_params.selected_countries[0]])
