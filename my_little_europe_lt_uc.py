@@ -11,7 +11,7 @@ from long_term_uc.common.long_term_uc_io import get_marginal_prices_file, get_op
 from long_term_uc.utils.read import read_and_check_uc_run_params
 from long_term_uc.utils.basic_utils import get_period_str
 from long_term_uc.include.dataset import Dataset
-from long_term_uc.include.dataset_builder import get_generation_units_data, control_min_pypsa_params_per_gen_units
+from long_term_uc.include.dataset_builder import control_min_pypsa_params_per_gen_units
 from long_term_uc.utils.read import read_and_check_pypsa_static_params
 from long_term_uc.include.dataset_builder import init_pypsa_network, add_gps_coordinates, add_energy_carrier, \
   add_generators, add_loads, add_interco_links, save_lp_model
@@ -36,13 +36,10 @@ eraa_dataset.get_countries_data(uc_run_params=uc_run_params,
                                 aggreg_prod_types_def=eraa_data_descr.aggreg_prod_types_def)
 
 print("Get generation units data, from both ERAA data - read just before - and JSON parameter file")
-generation_units_data = \
-  get_generation_units_data(uc_run_params=uc_run_params, pypsa_unit_params_per_agg_pt=eraa_data_descr.pypsa_unit_params_per_agg_pt,
-                            units_complem_params_per_agg_pt=eraa_data_descr.units_complem_params_per_agg_pt, 
-                            agg_res_cf_data=agg_cf_data, agg_gen_capa_data=agg_gen_capa_data)
-for country, val in generation_units_data.items():
-    for i in range(len(val)):
-        val[i].committable = False
+eraa_dataset.get_generation_units_data(uc_run_params=uc_run_params, 
+                                       pypsa_unit_params_per_agg_pt=eraa_data_descr.pypsa_unit_params_per_agg_pt,
+                                       units_complem_params_per_agg_pt=eraa_data_descr.units_complem_params_per_agg_pt)
+eraa_dataset.set_committable_param()
 # TODO[perpi]: connect this properly
 #if len(uc_run_params.updated_fuel_sources_params) > 0:
 #   generation_units_data = overwrite_gen_units_fuel_src_params(generation_units_data=generation_units_data, 
