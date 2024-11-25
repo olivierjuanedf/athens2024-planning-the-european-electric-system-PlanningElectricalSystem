@@ -9,9 +9,11 @@ import matplotlib.pyplot as plt
 
 from long_term_uc.common.error_msgs import print_errors_list
 from long_term_uc.common.fuel_sources import FuelSources
-from long_term_uc.common.long_term_uc_io import get_network_figure
+from long_term_uc.common.long_term_uc_io import get_marginal_prices_file, get_network_figure, \
+    get_opt_power_file, get_price_figure
+from long_term_uc.include.plotter import PlotParams
 from long_term_uc.utils.basic_utils import lexico_compar_str
-from long_term_uc.utils.pypsa_utils import OPTIM_RESOL_STATUS, get_network_obj_value
+from long_term_uc.utils.pypsa_utils import get_network_obj_value
 
 
 @dataclass
@@ -186,15 +188,39 @@ class PypsaModel:
             save_lp_model(self.network, year=year, n_countries=n_countries, period_start=period_start)
         return result
     
-    def get_opt_value(self, result: PYPSA_RESULT_TYPE) -> Optional[float]:
-        pypsa_opt_resol_status = OPTIM_RESOL_STATUS.optimal 
-        if result[1] == pypsa_opt_resol_status:
-            objective_value = get_network_obj_value(network=self.network)
-            print(f"Optimisation resolution status is {pypsa_opt_resol_status} with objective value (cost) = {objective_value:.2f} -> output data (resp. figures) can be generated")
-        else:
-            objective_value = None
+    def get_prod_var_opt(self):
+        self.prod_var_opt = self.network.generators_t.p
+    
+    def get_sde_dual_var_opt(self):
+        self.sde_dual_var_opt = self.network.buses_t.marginal_price
+
+    def get_opt_value(self, pypsa_resol_status: str) -> float: 
+        objective_value = get_network_obj_value(network=self.network)
+        print(f"Optimisation resolution status is {pypsa_resol_status} with objective value (cost) = {objective_value:.2f} -> output data (resp. figures) can be generated")
         return objective_value
     
+    def plot_marginal_price(self, plot_params: PlotParams, year: int, climatic_year: int, start_horizon: datetime):
+        self.network.buses_t.marginal_price.plot.line(figsize=(8, 3), ylabel="Euro per MWh", 
+                                                      color=plot_params.per_zone_color)
+        plt.tight_layout()
+        plt.savefig(get_price_figure(country='europe', year=year, climatic_year=climatic_year,
+                                     start_horizon=start_horizon)
+                                     )
+        plt.close()
+
+    def save_opt_decisions_to_csv(self, year: int, climatic_year: int, start_horizon: datetime):
+        print("Save optimal dispatch decisions to .csv file")
+        opt_p_csv_file = get_opt_power_file(country='europe', year=year, climatic_year=climatic_year,
+                                            start_horizon=start_horizon)
+        self.prod_var_opt.to_csv(opt_p_csv_file)
+
+    def save_marginal_prices_to_csv(self, year: int, climatic_year: int, start_horizon: datetime):
+        print("Save marginal prices decisions to .csv file")
+        marginal_prices_csv_file = get_marginal_prices_file(country='europe', year=year, 
+                                                            climatic_year=climatic_year,
+                                                            start_horizon=start_horizon)
+        self.sde_dual_var_opt.to_csv(marginal_prices_csv_file)
+
     
 def overwrite_gen_units_fuel_src_params(generation_units_data: GEN_UNITS_DATA_TYPE, updated_fuel_sources_params: Dict[str, Dict[str, float]]) -> GEN_UNITS_DATA_TYPE:
     for _, units_data in generation_units_data.items():
