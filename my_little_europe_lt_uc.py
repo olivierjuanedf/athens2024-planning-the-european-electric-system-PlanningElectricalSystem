@@ -12,8 +12,7 @@ from long_term_uc.utils.read import read_and_check_uc_run_params
 from long_term_uc.utils.basic_utils import get_period_str
 from long_term_uc.include.dataset import Dataset
 from long_term_uc.utils.read import read_and_check_pypsa_static_params
-from long_term_uc.include.dataset_builder import init_pypsa_network, add_gps_coordinates, add_energy_carrier, \
-  add_generators, add_loads, add_interco_links, save_lp_model
+from long_term_uc.include.dataset_builder import PypsaModel, save_lp_model
 from long_term_uc.common.fuel_sources import FUEL_SOURCES
 
 
@@ -49,47 +48,39 @@ pypsa_static_params = read_and_check_pypsa_static_params()
 eraa_dataset.control_min_pypsa_params_per_gen_units(pypsa_min_unit_params_per_agg_pt=pypsa_static_params.min_unit_params_per_agg_pt)
 
 # create PyPSA network
-network = init_pypsa_network(df_demand_first_country=demand[uc_run_params.selected_countries[0]])
+pypsa_model = PypsaModel(name="my little europe")
+date_idx = eraa_dataset.demand[uc_run_params.selected_countries[0]].index
 import pandas as pd
 horizon = pd.date_range(
     start = uc_run_params.uc_period_start.replace(year=uc_run_params.selected_target_year),
     end = uc_run_params.uc_period_end.replace(year=uc_run_params.selected_target_year),
     freq = 'h'
 )
-network.set_snapshots(horizon[:-1])
+pypsa_model.init_pypsa_network(date_idx=date_idx, date_range=horizon)
 # add GPS coordinates
 selec_countries_gps_coords = \
   {country: gps_coords for country, gps_coords in eraa_data_descr.gps_coordinates.items() 
    if country in uc_run_params.selected_countries}
-network = add_gps_coordinates(network=network, countries_gps_coords=selec_countries_gps_coords)
-network = add_energy_carrier(network=network, fuel_sources=FUEL_SOURCES)
-network = add_generators(network=network, generators_data=generation_units_data)
-network = add_loads(network=network, demand=demand)
-network = add_interco_links(network, countries=uc_run_params.selected_countries, 
-                            interco_capas=interco_capas)
-print("PyPSA network main properties:", network)
+pypsa_model.add_gps_coordinates(countries_gps_coords=selec_countries_gps_coords)
+pypsa_model.add_energy_carrier(fuel_sources=FUEL_SOURCES)
+pypsa_model.add_generators(generators_data=eraa_dataset.generation_units_data)
+pypsa_model.add_loads(demand=eraa_dataset.demand)
+pypsa_model.add_interco_links(countries=uc_run_params.selected_countries, interco_capas=eraa_dataset.interco_capas)
+print("PyPSA network main properties:", pypsa_model.network)
 # plot network
 from long_term_uc.include.plotter import PlotParams
 plot_params = PlotParams()
 plot_params.read_and_check()
-network.plot(title="My little elec. Europe network", color_geomap=True, jitter=0.3)
-plt.savefig(get_network_figure())
-plt.close()
-print("Optimize 'network' - i.e. solve associated UC problem")
-result = network.optimize(solver_name="highs")
-print(result)
-save_lp_model(network, year=uc_run_params.selected_target_year, 
-              n_countries=len(uc_run_params.selected_countries), 
-              period_start=uc_run_params.uc_period_start)
+pypsa_model.plot_network()
+result = pypsa_model.optimize_network(year=uc_run_params.selected_target_year,
+                                      n_countries=len(uc_run_params.selected_countries),
+                                      period_start=uc_run_params.uc_period_start)
 print("THE END of European PyPSA-ERAA UC simulation... now you can hack it!")
 
-from long_term_uc.utils.pypsa_utils import OPTIM_RESOL_STATUS, get_network_obj_value
 pypsa_opt_resol_status = OPTIM_RESOL_STATUS.optimal
-
 # TODO[perpi]: reactivate prod plot, using colors set in JSON file
 if result[1] == pypsa_opt_resol_status:
-  objective_value = get_network_obj_value(network=network)
-  print(f"Optimisation resolution status is {pypsa_opt_resol_status} with objective value (cost) = {objective_value:.2f} -> output data (resp. figures) can be generated")
+  objective_value = pypsa_model.get_opt_value(result=result)
 
   network.buses_t.marginal_price.plot.line(figsize=(8, 3), ylabel="Euro per MWh", color=plot_params.per_zone_color)
   plt.tight_layout()
