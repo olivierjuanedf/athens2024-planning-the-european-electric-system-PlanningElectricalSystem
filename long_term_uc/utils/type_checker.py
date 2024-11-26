@@ -1,10 +1,7 @@
 import sys
-from typing import Optional
+from typing import Dict
 
-from long_term_uc.common.error_msgs import print_out_msg
-
-
-# TODO: Dict[str, Dict[str, List[str]]], Dict[str, List[int]], Dict[str, Dict[str, Union[str or num]]]
+from long_term_uc.common.error_msgs import print_errors_list, print_out_msg
 
 
 # basic checker
@@ -115,3 +112,14 @@ CHECK_FUNCTIONS = {"str": check_str,
                    "two_level_dict_str_str_list-of-str": check_str_str_list_of_str_dict,
                    "two_level_dict_str_str_str": check_three_level_str_dict
                    }
+
+
+def apply_params_type_check(param_obj_dict: dict, types_for_check: Dict[str, str], param_name: str):
+    check_errors = []
+    for attr_tb_checked, type_for_check in types_for_check.items():
+        check_result = apply_data_type_check(data_type=type_for_check, data_val=param_obj_dict[attr_tb_checked])
+        if check_result is False:
+            check_errors.append(attr_tb_checked)
+    if len(check_errors) > 0:
+        print_errors_list(error_name=f"{param_name} JSON data with erroneous types",
+                          errors_list=check_errors)

@@ -1,14 +1,17 @@
 import json
-from dataclasses import dataclass
+from typing import List
+from copy import deepcopy
 
 
 from long_term_uc.common.long_term_uc_io import get_json_usage_params_file, get_json_fixed_params_file, \
     get_json_eraa_avail_values_file, get_json_params_tb_modif_file, get_json_pypsa_static_params_file, \
-        get_json_params_modif_country_files, get_json_fuel_sources_tb_modif_file
+        get_json_params_modif_country_files, get_json_fuel_sources_tb_modif_file, \
+            get_json_data_analysis_params_file
 from long_term_uc.common.constants_extract_eraa_data import USAGE_PARAMS_SHORT_NAMES, ERAADatasetDescr, \
     PypsaStaticParams, UsageParameters
 from long_term_uc.common.uc_run_params import UCRunParams
 from long_term_uc.common.error_msgs import print_out_msg
+from long_term_uc.include.dataset_analyzer import DataAnalysis, DATA_SUBTYPE_KEY
 from long_term_uc.utils.dir_utils import check_file_existence
 
 
@@ -116,3 +119,30 @@ def read_and_check_pypsa_static_params() -> PypsaStaticParams:
     pypsa_static_params.check_types()
     pypsa_static_params.process()
     return pypsa_static_params
+
+
+def read_and_check_data_analysis_params() -> List[DataAnalysis]:
+    json_data_analysis_params_file = get_json_data_analysis_params_file()
+    print_out_msg(msg_level="info", 
+                  msg=f"Read and check data analysis parameters file; the ones modified in file {json_data_analysis_params_file}")
+
+    json_data_analysis_params = check_and_load_json_file(json_file=json_data_analysis_params_file,
+                                                         file_descr="JSON data analysis params")
+    dict_keys = list(DataAnalysis.dataclass_fields.keys())
+    n_keys = len(dict_keys)
+    dict_keys_wo_subdt = deepcopy(dict_keys)
+    dict_keys_wo_subdt.remove(DATA_SUBTYPE_KEY)
+    data_analysis_params = json_data_analysis_params["data_analysis_list"]
+    data_analyses = []
+    for param_vals in data_analysis_params:
+        # case including sub datatype, e.g. production type
+        if len(param_vals) == n_keys:
+            current_keys = dict_keys
+        else:
+            current_keys = dict_keys_wo_subdt
+        dict_params = dict(zip(current_keys, param_vals))
+        data_analyses.append(DataAnalysis(**dict_params))
+    # check types
+    for elt_analysis in data_analyses:
+        elt_analysis.check_types()
+    return data_analyses

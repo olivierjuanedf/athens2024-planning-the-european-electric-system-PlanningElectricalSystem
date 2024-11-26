@@ -1,0 +1,19 @@
+{
+    "data_analysis_list": [
+      [
+        "plot",
+        "demand",
+        "france",
+        2025,
+        1989
+      ],
+      [
+        "plot",
+        "res_capa-factors",
+        "solar_pv",
+        "italy",
+        2025,
+        1989
+      ]
+    ]
+  }

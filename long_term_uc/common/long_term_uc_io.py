@@ -59,6 +59,7 @@ INPUT_FOLDER = "input"
 INPUT_LT_UC_SUBFOLDER = f"{INPUT_FOLDER}/long_term_uc"
 INPUT_LT_UC_COUNTRY_SUBFOLDER = f"{INPUT_LT_UC_SUBFOLDER}/countries"
 INPUT_FUNC_PARAMS_SUBFOLDER = f"{INPUT_FOLDER}/functional_params"
+INPUT_DATA_ANALYSIS_SUBFOLDER = f"{INPUT_LT_UC_SUBFOLDER}/data_analysis"
 INTERCO_STR_SEP = "2"
 INPUT_CY_STRESS_TEST_SUBFOLDER = "cy_stress-test"
 # first date in ERAA data (fictive 364 days calendar)
@@ -98,6 +99,10 @@ def get_json_params_modif_country_files() -> List[str]:
 
 def get_json_pypsa_static_params_file() -> str:
     return os.path.join(INPUT_LT_UC_SUBFOLDER, "pypsa_static_params.json") 
+
+
+def get_json_data_analysis_params_file() -> str:
+    return os.path.join(INPUT_DATA_ANALYSIS_SUBFOLDER, "data-analysis_params_to-be-modif.json") 
 
 
 def get_network_figure() -> str:

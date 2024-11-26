@@ -1,10 +1,9 @@
 from dataclasses import dataclass
 from typing import Dict, List, Tuple, Union, Optional, Literal
 
-from long_term_uc.common.error_msgs import print_errors_list
 from long_term_uc.utils.basic_utils import is_str_bool
 from long_term_uc.utils.eraa_utils import set_interco_to_tuples
-from long_term_uc.utils.type_checker import apply_data_type_check
+from long_term_uc.utils.type_checker import apply_params_type_check
 
 
 INTERCO_STR_SEP = "2"
@@ -22,17 +21,6 @@ USAGE_PARAMS_SHORT_NAMES = {
 
 
 type Mode = Literal['solo', 'europe']
-
-
-def apply_params_type_check(param_obj_dict: dict, types_for_check: Dict[str, str], param_name: str):
-    check_errors = []
-    for attr_tb_checked, type_for_check in types_for_check.items():
-        check_result = apply_data_type_check(data_type=type_for_check, data_val=param_obj_dict[attr_tb_checked])
-        if check_result is False:
-            check_errors.append(attr_tb_checked)
-    if len(check_errors) > 0:
-        print_errors_list(error_name=f"{param_name} JSON data with erroneous types", 
-                            errors_list=check_errors)
 
 
 # raw types (just after reading) of the following attributes 
