@@ -5,8 +5,8 @@ from long_term_uc.utils.type_checker import apply_params_type_check
 
 AVAILABLE_ANALYSIS_TYPES = ["calc", "plot"]
 DATA_SUBTYPE_KEY = "data_subtype"  # TODO[Q2OJ]: cleaner way to set/get it?
-RAW_TYPES_FOR_CHECK = {"analysis_type": "str", "data_type": "str", "country": str,
-                       "year": "int", "data_subtype": str}
+RAW_TYPES_FOR_CHECK = {"analysis_type": "str", "data_type": "str", "country": "str",
+                       "year": "int", "data_subtype": "str"}
 
 
 @dataclass
