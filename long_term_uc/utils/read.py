@@ -128,7 +128,7 @@ def read_and_check_data_analysis_params() -> List[DataAnalysis]:
 
     json_data_analysis_params = check_and_load_json_file(json_file=json_data_analysis_params_file,
                                                          file_descr="JSON data analysis params")
-    dict_keys = list(DataAnalysis.dataclass_fields.keys())
+    dict_keys = list(DataAnalysis.__annotations__.keys())
     n_keys = len(dict_keys)
     dict_keys_wo_subdt = deepcopy(dict_keys)
     dict_keys_wo_subdt.remove(DATA_SUBTYPE_KEY)
