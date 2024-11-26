@@ -11,7 +11,7 @@ from long_term_uc.common.constants_extract_eraa_data import USAGE_PARAMS_SHORT_N
     PypsaStaticParams, UsageParameters
 from long_term_uc.common.uc_run_params import UCRunParams
 from long_term_uc.common.error_msgs import print_out_msg
-from long_term_uc.include.dataset_analyzer import DataAnalysis, DATA_SUBTYPE_KEY
+from long_term_uc.include.dataset_analyzer import DataAnalysis, DATA_SUBTYPE_KEY, ORDERED_DATA_ANALYSIS_ATTRS
 from long_term_uc.utils.dir_utils import check_file_existence
 
 
@@ -128,7 +128,7 @@ def read_and_check_data_analysis_params() -> List[DataAnalysis]:
 
     json_data_analysis_params = check_and_load_json_file(json_file=json_data_analysis_params_file,
                                                          file_descr="JSON data analysis params")
-    dict_keys = list(DataAnalysis.__annotations__.keys())
+    dict_keys = ORDERED_DATA_ANALYSIS_ATTRS
     n_keys = len(dict_keys)
     dict_keys_wo_subdt = deepcopy(dict_keys)
     dict_keys_wo_subdt.remove(DATA_SUBTYPE_KEY)
